@@ -4,6 +4,8 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import Logo from '../assets/logo.jpg'
 import {motion} from 'framer-motion'
+
+
 const ResetPassword = () => {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')

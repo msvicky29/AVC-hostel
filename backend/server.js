@@ -34,6 +34,6 @@ app.get('/api/protected-route', authenticateToken, (req, res) => {
 // Other routes
 app.use('/api', adminRoute)
 
-app.listen(PORT, () => {
+app.listen(5000, () => {
     console.log("Server Started!!✅")
 })
