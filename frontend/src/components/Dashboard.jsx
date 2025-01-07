@@ -38,7 +38,7 @@ const Dashboard = () => {
     })
     useEffect(async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/get-meal')
+            const response = await axios.get('https://avc-hostel.onrender.com/api/get-meal')
             console.log(response)
             setCurrentMeal(response.data.data[0])
         }
@@ -63,7 +63,7 @@ const Dashboard = () => {
             return
         }
         try {
-            const response = await axios.patch(`http://localhost:5000/api/update-menu`, { finalMealData });
+            const response = await axios.patch(`https://avc-hostel.onrender.com/api/update-menu`, { finalMealData });
             console.log('Response:', response.data);
             if (response.data.success) {
                 toast.success(response.data.message);

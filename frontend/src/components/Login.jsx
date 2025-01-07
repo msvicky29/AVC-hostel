@@ -12,7 +12,7 @@ const Login = () => {
     const handleForm = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post('http://localhost:5000/api/login', { email, password })
+            const response = await axios.post('https://avc-hostel.onrender.com/api/login', { email, password })
             
             if (response.data.success) {
                 localStorage.setItem('token', `Bearer ${response.data.token}`)

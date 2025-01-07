@@ -13,7 +13,7 @@ const ForgotPassword = () => {
         e.preventDefault()
         setLoading(true)
         try {
-            const response = await axios.post('http://localhost:5000/api/forgot-password', { email })
+            const response = await axios.post('https://avc-hostel.onrender.com/api/forgot-password', { email })
             console.log(response)
             if (response.data.success) {
                 toast.success('Password reset link sent to your email!')

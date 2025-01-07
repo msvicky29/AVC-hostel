@@ -30,7 +30,7 @@ const ResetPassword = () => {
         try {
             console.log(token); // Check the token value
 
-            const response = await axios.post(`http://localhost:5000/api/reset-password/${token}`, {
+            const response = await axios.post(`https://avc-hostel.onrender.com/api/reset-password/${token}`, {
                 newPassword: password
             })
             console.log(response)
