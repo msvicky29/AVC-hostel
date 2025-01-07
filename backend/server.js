@@ -5,7 +5,7 @@ require('dotenv').config()
 const cors = require('cors')
 const adminRoute = require('./routes/route.js')
 const authenticateToken = require('./auth/authenticateToken.js')
-
+// const PORT = process.env.PORT || 4000;
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => console.log("Database connected successfully ✅✅"))
     .catch((err) => {
@@ -34,6 +34,6 @@ app.get('/api/protected-route', authenticateToken, (req, res) => {
 // Other routes
 app.use('/api', adminRoute)
 
-app.listen(5000, () => {
+app.listen(PORT, () => {
     console.log("Server Started!!✅")
 })
