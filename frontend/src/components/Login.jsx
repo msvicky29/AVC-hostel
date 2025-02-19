@@ -46,7 +46,7 @@ const Login = () => {
                     className="flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6">
                         <div className="max-w-xl lg:max-w-3xl">
                             <div className='flex w-full justify-center'>
-                                <img src={Logo} className='w-32' />
+                                <img src={Logo} alt="Logo" className='w-32' />
 
                             </div>
                             <h1 className="mt-6 text-2xl text-center font-bold text-gray-900 sm:text-3xl md:text-4xl">
