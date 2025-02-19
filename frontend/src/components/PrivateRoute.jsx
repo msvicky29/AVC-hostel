@@ -15,6 +15,7 @@ const PrivateRoute = ({ children }) => {
             }
 
             try {
+                // const response = await axios.get('https://avc-hostel.onrender.com/api/protected-route', {
                 const response = await axios.get('https://avc-hostel.onrender.com/api/protected-route', {
                     headers: { 'Authorization': `${token}` }
                 })

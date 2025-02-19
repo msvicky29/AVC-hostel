@@ -4,14 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Logo from '../assets/logo.jpg'
+import Select from 'react-select';
 
 
 const Dashboard = () => {
 
     const [mealData, setMealData] = useState({
-        breakfast: '',
-        lunch: '',
-        dinner: ''
+        breakfast: [],
+        lunch: [],
+        dinner: []
     });
     const [customMeals, setCustomMeals] = useState({
         breakfast: '',
@@ -23,6 +24,100 @@ const Dashboard = () => {
         lunch: '',
         dinner: ''
     });
+
+    // Add this state for day selection
+    const [selectedDay, setSelectedDay] = useState('Monday');
+    const [weeklyMenu, setWeeklyMenu] = useState({
+        Monday: { breakfast: '', lunch: '', dinner: '' },
+        Tuesday: { breakfast: '', lunch: '', dinner: '' },
+        Wednesday: { breakfast: '', lunch: '', dinner: '' },
+        Thursday: { breakfast: '', lunch: '', dinner: '' },
+        Friday: { breakfast: '', lunch: '', dinner: '' },
+        Saturday: { breakfast: '', lunch: '', dinner: '' },
+        Sunday: { breakfast: '', lunch: '', dinner: '' }
+    });
+
+    // Add this state to track the selected day's menu
+    const [selectedDayMenu, setSelectedDayMenu] = useState({
+        breakfast: [],
+        lunch: [],
+        dinner: []
+    });
+
+    // Convert your meal options to the format react-select expects
+    const mealOptions = {
+        breakfast: [
+            { value: 'idly', label: 'Idly' },
+            { value: 'sambar', label: 'Sambar' },
+            { value: 'pongal', label: 'Pongal' },
+            { value: 'bajji', label: 'Bajji' },
+            { value: 'coconut-chutney', label: 'Coconut chutney' },
+            { value: 'medhu-vadai', label: 'Medhu Vadai' },
+            { value: 'rava-upma', label: 'Rava upma' },
+            { value: 'wheat-upma', label: 'Wheat upma' },
+            { value: 'masal-vadai', label: 'Masal Vadai' },
+            { value: 'poori', label: 'Poori' },
+            { value: 'potato-guruma', label: 'Potato guruma' },
+            
+        ],
+        lunch: [
+            { value: 'sadam', label: 'Rice' },
+            { value: 'kadamba_sambar', label: 'Mixed Sambar' },
+            { value: 'urulaikizhangu', label: 'Potato' },
+            { value: 'thakkali_rasam', label: 'Tomato Rasam' },
+            { value: 'buttermilk', label: 'Buttermilk' },
+            { value: 'appalam', label: 'Papad' },
+           
+        
+          
+            { value: 'urundai_kuzhambu', label: 'Urundai Gravy' },
+            { value: 'pudalangai_kootu', label: 'Snake Gourd Kootu' },
+            { value: 'thakkali_rasam', label: 'Tomato Rasam' },
+        
+           
+        
+           
+            { value: 'beetroot_porial', label: 'Beetroot Stir-fry' },
+            { value: 'vengaya_rasam', label: 'Onion Rasam' },
+            
+           
+        
+           
+            { value: 'poricha_kuzhambu', label: 'Poricha kulambu' },
+            { value: 'vazhaikai_porial', label: 'Vazhaakai fry' },
+            
+           
+        
+           
+            { value: 'keera_porial', label: 'Greens Stir-fry' },
+           
+            
+            { value: 'vendhaya_kuzhambu', label: 'Vendhaya Kulambu' },
+            { value: 'thakkali_kootu', label: 'Tomato Kootu' },
+            { value: 'oorugai', label: 'Pickle' }
+           
+        ]
+        ,
+        dinner: [
+            { value: 'veg_kurma', label: 'Vegetable Kurma' },
+            { value: 'pulav_rice', label: 'Pulav Rice' },
+            { value: 'dhal', label: 'Dhal Soup' },
+           
+            { value: 'sambar', label: 'Sambar' },
+           
+            { value: 'semia_kichadi', label: 'Semia Kichadi' },
+            { value: 'dosa', label: 'Dosa' },
+            { value: 'karaa_chutney', label: 'Kaara Chutney' },
+            { value: 'chapati', label: 'Chapati' },
+            { value: 'pattani_kurma', label: 'Pattani Kurma' },
+            
+            { value: 'adai', label: 'Adai' },
+            { value: 'coconut_chutney', label: 'Coconut Chutney' },
+            { value: 'curd_rice', label: 'Curd Rice' },
+            { value: 'oorugai', label: 'Pickle' }
+        ]
+        
+    };
 
     useEffect(() => {
         setFinalMealData({
@@ -38,6 +133,7 @@ const Dashboard = () => {
     })
     useEffect(async () => {
         try {
+            // const response = await axios.get('https://avc-hostel.onrender.com/api/get-meal')
             const response = await axios.get('https://avc-hostel.onrender.com/api/get-meal')
             console.log(response)
             setCurrentMeal(response.data.data[0])
@@ -48,32 +144,104 @@ const Dashboard = () => {
     }, [])
 
 
+    
+    useEffect(() => {
+        const fetchWeeklyMenu = async () => {
+            try {
+                const response = await axios.get('https://avc-hostel.onrender.com/api/weekly-menu');
+                if (response.data.success) {
+                    setWeeklyMenu(response.data.data);
+                }
+            } catch (error) {
+                toast.error('Error fetching weekly menu');
+            }
+        };
+
+        fetchWeeklyMenu();
+    }, []);
+
+    // Add this useEffect to update the current menu when day changes
+    useEffect(() => {
+        const fetchMenuForDay = async () => {
+            try {
+                const response = await axios.get('https://avc-hostel.onrender.com/api/weekly-menu');
+                if (response.data.success) {
+                    const weeklyMenu = response.data.data;
+                    const todaysMenu = weeklyMenu.find(menu => menu.day === selectedDay);
+                    if (todaysMenu) {
+                        // Update the selected day menu display
+                        setSelectedDayMenu({
+                            breakfast: todaysMenu.breakfast,
+                            lunch: todaysMenu.lunch,
+                            dinner: todaysMenu.dinner
+                        });
+
+                        // Convert menu items to react-select format
+                        setMealData({
+                            breakfast: todaysMenu.breakfast.map(item => ({
+                                value: item.toLowerCase(),
+                                label: item
+                            })),
+                            lunch: todaysMenu.lunch.map(item => ({
+                                value: item.toLowerCase(),
+                                label: item
+                            })),
+                            dinner: todaysMenu.dinner.map(item => ({
+                                value: item.toLowerCase(),
+                                label: item
+                            }))
+                        });
+                    } else {
+                        // Reset selections if no menu exists for the day
+                        setSelectedDayMenu({
+                            breakfast: [],
+                            lunch: [],
+                            dinner: []
+                        });
+                        setMealData({
+                            breakfast: [],
+                            lunch: [],
+                            dinner: []
+                        });
+                    }
+                }
+            } catch (error) {
+                toast.error('Error fetching menu for selected day');
+            }
+        };
+
+        fetchMenuForDay();
+    }, [selectedDay]);
+
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        console.log(finalMealData)
-        if (!finalMealData.breakfast || !finalMealData.lunch || !finalMealData.dinner) {
-            toast.error('Please select all meals')
-            return
-        }
-        const regex = /^[a-zA-Z\s]+$/;
-        if (!regex.test(finalMealData.breakfast) || !regex.test(finalMealData.lunch) || !regex.test(finalMealData.dinner)) {
-            toast.error('Meals should only contain letters and spaces')
-            return
-        }
+        e.preventDefault();
+        
+        // Transform the selected options to just the labels
+        const transformedMeals = {
+            breakfast: mealData.breakfast.map(item => item.label),
+            lunch: mealData.lunch.map(item => item.label),
+            dinner: mealData.dinner.map(item => item.label)
+        };
+
         try {
-            const response = await axios.patch(`https://avc-hostel.onrender.com/api/update-menu`, { finalMealData });
-            console.log('Response:', response.data);
+            const response = await axios.patch(`https://avc-hostel.onrender.com/api/weekly-menu/${selectedDay}`, {
+                meals: transformedMeals  
+            });
+
             if (response.data.success) {
-                toast.success(response.data.message);
-            } else {
-                toast.error(response.data.message);
+                toast.success(`Menu for ${selectedDay} updated successfully`);
+                // Update local state
+                setWeeklyMenu(prev => ({
+                    ...prev,
+                    [selectedDay]: transformedMeals
+                }));
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Failed to update menu');
         }
-    }
+    };
 
 
     useEffect(() => {
@@ -153,23 +321,74 @@ const Dashboard = () => {
                             Select your preferred meals for today. Our kitchen staff ensures fresh and nutritious meals prepared with high-quality ingredients.
                         </p>
                     </motion.div>
-                    <div className="bg-white p-6 border border-yellow-400 w-72 mx-auto  rounded-lg shadow-md mb-8">
-                        <h2 className="text-xl text-center font-semibold text-gray-800 mb-4">Current Menu</h2>
-                        <div className="flex flex-col space-y-2">
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-700">Breakfast:</span>
-                                <span className="text-gray-600">{currentMeal.breakfast.charAt(0).toUpperCase() + currentMeal.breakfast.slice(1)}
-                                </span>
+                    <div className="bg-white p-6 border-2 border-indigo-500 w-96 mx-auto rounded-lg shadow-lg mb-8">
+                        <h2 className="text-xl text-center font-bold text-indigo-800 mb-6">
+                            {selectedDay}'s Menu
+                        </h2>
+                        <div className="flex flex-col space-y-4">
+                            <div className="border-b pb-3">
+                                <span className="font-semibold text-gray-800 block mb-2">Breakfast:</span>
+                                <div className="pl-4 text-gray-700">
+                                    {Array.isArray(selectedDayMenu.breakfast) && selectedDayMenu.breakfast.length > 0 
+                                        ? selectedDayMenu.breakfast.map((item, index) => (
+                                            <div key={index} className="flex items-center">
+                                                <span className="text-indigo-500 mr-2">•</span>
+                                                {item}
+                                            </div>
+                                        ))
+                                        : <span className="text-gray-500 italic">Not set</span>
+                                    }
+                                </div>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-700">Lunch:</span>
-                                <span className="text-gray-600">{currentMeal.lunch.charAt(0).toUpperCase() + currentMeal.lunch.slice(1)}</span>
+                            <div className="border-b pb-3">
+                                <span className="font-semibold text-gray-800 block mb-2">Lunch:</span>
+                                <div className="pl-4 text-gray-700">
+                                    {Array.isArray(selectedDayMenu.lunch) && selectedDayMenu.lunch.length > 0 
+                                        ? selectedDayMenu.lunch.map((item, index) => (
+                                            <div key={index} className="flex items-center">
+                                                <span className="text-indigo-500 mr-2">•</span>
+                                                {item}
+                                            </div>
+                                        ))
+                                        : <span className="text-gray-500 italic">Not set</span>
+                                    }
+                                </div>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-700">Dinner:</span>
-                                <span className="text-gray-600">{currentMeal.dinner.charAt(0).toUpperCase() + currentMeal.dinner.slice(1)}</span>
+                            <div>
+                                <span className="font-semibold text-gray-800 block mb-2">Dinner:</span>
+                                <div className="pl-4 text-gray-700">
+                                    {Array.isArray(selectedDayMenu.dinner) && selectedDayMenu.dinner.length > 0 
+                                        ? selectedDayMenu.dinner.map((item, index) => (
+                                            <div key={index} className="flex items-center">
+                                                <span className="text-indigo-500 mr-2">•</span>
+                                                {item}
+                                            </div>
+                                        ))
+                                        : <span className="text-gray-500 italic">Not set</span>
+                                    }
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    {/* Add this before the meal selection grid */}
+                    <div className="mb-8">
+                        <label htmlFor="day-select" className="block text-sm font-medium text-gray-700 mb-2">
+                            Select Day
+                        </label>
+                        <select
+                            id="day-select"
+                            value={selectedDay}
+                            onChange={(e) => setSelectedDay(e.target.value)}
+                            className="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
                     </div>
                     {/* Menu Selection Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -182,26 +401,22 @@ const Dashboard = () => {
                                         7:30 AM - 9:30 AM
                                     </span>
                                 </label>
-                                <select
-                                    onChange={(e) => {
-                                        setMealData({ ...mealData, breakfast: e.target.value })
-                                        if (e.target.value !== 'others') {
-                                            setCustomMeals({ ...customMeals, breakfast: '' })
-                                        }
+                                <Select
+                                    isMulti
+                                    name="breakfast"
+                                    options={mealOptions.breakfast}
+                                    className="basic-multi-select"
+                                    classNamePrefix="select"
+                                    value={mealData.breakfast}
+                                    onChange={(selectedOptions) => {
+                                        setMealData({
+                                            ...mealData,
+                                            breakfast: selectedOptions || []
+                                        });
                                     }}
-                                    id="breakfast"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                                >
-                                    <option value="">Select breakfast item</option>
-                                    <option value="idly">Idly with Sambar & Chutney</option>
-                                    <option value="dosa">Masala Dosa with Chutney</option>
-                                    <option value="poori">Poori with Potato Curry</option>
-                                    <option value="upma">Vegetable Upma with Chutney</option>
-                                    <option value="pongal">Pongal with Coconut Chutney</option>
-                                    <option value="others">Others</option>
-                                </select>
+                                />
 
-                                {mealData.breakfast === 'others' && (
+                                {mealData.breakfast.includes('others') && (
                                     <>
                                         <h2 className="text-lg font-semibold text-gray-700 my-3">New Breakfast Item</h2>
                                         <input
@@ -225,21 +440,22 @@ const Dashboard = () => {
                                         12:30 PM - 2:30 PM
                                     </span>
                                 </label>
-                                <select
-                                    onChange={(e) => setMealData({ ...mealData, lunch: e.target.value })}
-                                    id="lunch"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                >
-                                    <option value="">Select lunch item</option>
-                                    <option value="meals">South Indian Meals</option>
-                                    <option value="biryani">Vegetable Biryani</option>
-                                    <option value="pulao">Jeera Pulao with Dal</option>
-                                    <option value="curdRice">Curd Rice with Pickle</option>
-                                    <option value="chapati">Chapati with Paneer Curry</option>
-                                    <option value="others">Others</option>
-                                </select>
+                                <Select
+                                    isMulti
+                                    name="lunch"
+                                    options={mealOptions.lunch}
+                                    className="basic-multi-select"
+                                    classNamePrefix="select"
+                                    value={mealData.lunch}
+                                    onChange={(selectedOptions) => {
+                                        setMealData({
+                                            ...mealData,
+                                            lunch: selectedOptions || []
+                                        });
+                                    }}
+                                />
 
-                                {mealData.lunch === 'others' && (
+                                {mealData.lunch.includes('others') && (
                                     <>
                                         <h2 className="text-lg font-semibold text-gray-700 my-3">New Lunch Item</h2>
                                         <input
@@ -263,21 +479,22 @@ const Dashboard = () => {
                                         7:30 PM - 9:30 PM
                                     </span>
                                 </label>
-                                <select
-                                    onChange={(e) => setMealData({ ...mealData, dinner: e.target.value })}
-                                    id="dinner"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
-                                >
-                                    <option value="">Select dinner item</option>
-                                    <option value="chapati">Chapati with Mixed Veg</option>
-                                    <option value="parotta">Parotta with Kurma</option>
-                                    <option value="friedRice">Vegetable Fried Rice</option>
-                                    <option value="noodles">Hakka Noodles</option>
-                                    <option value="khichdi">Khichdi with Papad</option>
-                                    <option value="others">Others</option>
-                                </select>
+                                <Select
+                                    isMulti
+                                    name="dinner"
+                                    options={mealOptions.dinner}
+                                    className="basic-multi-select"
+                                    classNamePrefix="select"
+                                    value={mealData.dinner}
+                                    onChange={(selectedOptions) => {
+                                        setMealData({
+                                            ...mealData,
+                                            dinner: selectedOptions || []
+                                        });
+                                    }}
+                                />
 
-                                {mealData.dinner === 'others' && (
+                                {mealData.dinner.includes('others') && (
                                     <>
                                         <h2 className="text-lg font-semibold text-gray-700 my-3">New Dinner Item</h2>
                                         <input

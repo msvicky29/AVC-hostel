@@ -288,4 +288,113 @@ const getMealData=async(req,res)=>{
     }
 }
 
-module.exports={signUp,logIn,forgotPassword,resetPassword,submitMenu, updateMenu,getMealData}
+const getMealByDay = async (req, res) => {
+    try {
+        const { day } = req.params;
+        
+        // Find all menus
+        const menuData = await meal.findOne();
+        
+        if (!menuData || !menuData.weeklyMenu) {
+            return res.status(404).json({
+                success: false,
+                message: "No menu data found"
+            });
+        }
+
+       
+        const dayMenu = menuData.weeklyMenu.find(item => 
+            item.day.toLowerCase() === day.toLowerCase()
+        );
+
+        if (!dayMenu) {
+            return res.status(404).json({
+                success: false,
+                message: `Menu for ${day} not found`
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Menu fetched successfully",
+            data: dayMenu
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+const getWeeklyMenu = async (req, res) => {
+    try {
+        const weeklyMenu = await meal.findOne();
+        return res.status(200).json({
+            success: true,
+            data: weeklyMenu?.weeklyMenu || []
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching weekly menu'
+        });
+    }
+};
+
+const updateWeeklyMenu = async (req, res) => {
+    try {
+        const { day } = req.params;
+        const { meals } = req.body;
+        
+        // Validate that meals contains arrays of strings
+        if (!meals.breakfast || !meals.lunch || !meals.dinner ||
+            !Array.isArray(meals.breakfast) || !Array.isArray(meals.lunch) || !Array.isArray(meals.dinner)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid meal data format'
+            });
+        }
+
+        let menu = await meal.findOne();
+        if (!menu) {
+            menu = new meal({ weeklyMenu: [] });
+        }
+
+        const dayIndex = menu.weeklyMenu.findIndex(d => d.day === day);
+        if (dayIndex > -1) {
+            menu.weeklyMenu[dayIndex] = {
+                day,
+                breakfast: meals.breakfast,
+                lunch: meals.lunch,
+                dinner: meals.dinner
+            };
+        } else {
+            menu.weeklyMenu.push({
+                day,
+                breakfast: meals.breakfast,
+                lunch: meals.lunch,
+                dinner: meals.dinner
+            });
+        }
+
+        await menu.save();
+
+        return res.status(200).json({
+            success: true,
+            message: `Menu for ${day} updated successfully`,
+            data: menu.weeklyMenu
+        });
+    } catch (error) {
+        console.error('Update menu error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating menu'
+        });
+    }
+};
+
+
+module.exports={signUp,logIn,forgotPassword,resetPassword,submitMenu, updateMenu,getMealData,getMealByDay, getWeeklyMenu, updateWeeklyMenu}
