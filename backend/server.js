@@ -18,13 +18,13 @@ mongoose.connect(process.env.MONGODB_URL)
     }
 
 app.use(express.json())
-// app.use(cors({
-//     origin: 'https://avc-hostel-admin.onrender.com'
-// }))
-
 app.use(cors({
-     origin: 'http://localhost:5173'
+    origin: 'https://avc-hostel-admin.onrender.com'
 }))
+
+// app.use(cors({
+//      origin: 'http://localhost:5173'
+// }))
 
 // Protected route for token verification
 app.get('/api/protected-route', authenticateToken, (req, res) => {
