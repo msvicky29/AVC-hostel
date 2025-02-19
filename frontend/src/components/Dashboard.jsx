@@ -321,7 +321,7 @@ const Dashboard = () => {
                             Select your preferred meals for today. Our kitchen staff ensures fresh and nutritious meals prepared with high-quality ingredients.
                         </p>
                     </motion.div>
-                    <div className="bg-white p-6 border-2 border-indigo-500 w-96 mx-auto rounded-lg shadow-lg mb-8">
+                    <div className="bg-white p-6 border-2 border-indigo-500 w-80 mx-auto rounded-lg shadow-lg mb-8">
                         <h2 className="text-xl text-center font-bold text-indigo-800 mb-6">
                             {selectedDay}'s Menu
                         </h2>
