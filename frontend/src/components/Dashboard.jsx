@@ -63,38 +63,23 @@ const Dashboard = () => {
         lunch: [
             { value: 'sadam', label: 'Rice' },
             { value: 'kadamba_sambar', label: 'Mixed Sambar' },
-            { value: 'urulaikizhangu', label: 'Potato' },
+            { value: 'veg_briyani', label: 'Vegetable briyani' },
+            { value: 'urulaikizhangu', label: 'Potato fry' },
             { value: 'thakkali_rasam', label: 'Tomato Rasam' },
             { value: 'buttermilk', label: 'Buttermilk' },
             { value: 'appalam', label: 'Papad' },
-           
-        
-          
             { value: 'urundai_kuzhambu', label: 'Urundai Gravy' },
             { value: 'pudalangai_kootu', label: 'Snake Gourd Kootu' },
             { value: 'thakkali_rasam', label: 'Tomato Rasam' },
-        
-           
-        
-           
             { value: 'beetroot_porial', label: 'Beetroot Stir-fry' },
             { value: 'vengaya_rasam', label: 'Onion Rasam' },
-            
-           
-        
-           
             { value: 'poricha_kuzhambu', label: 'Poricha kulambu' },
             { value: 'vazhaikai_porial', label: 'Vazhaakai fry' },
-            
-           
-        
-           
-            { value: 'keera_porial', label: 'Greens Stir-fry' },
-           
-            
-            { value: 'vendhaya_kuzhambu', label: 'Vendhaya Kulambu' },
+            { value: 'keera_porial', label: 'Greens Stir-fry' }, 
+            { value: 'vathal_kuzhambu', label: 'Vathal Kulambu' },
             { value: 'thakkali_kootu', label: 'Tomato Kootu' },
             { value: 'oorugai', label: 'Pickle' }
+            
            
         ]
         ,
